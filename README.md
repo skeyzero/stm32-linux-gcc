@@ -1,17 +1,19 @@
-# STM32F10X-GCC-make-introduction
-Tutorial of how to setup an environment to program STM32F103 microcontroller from the command line with GCC
+# STM32F103 基本框架
 
-See the accompanying blog post at: http://aviatorahmet.blogspot.com/2016/04/arm-stm32f10x-programming-with-gcc.html
-for complete information. It targets the STM32F103RB Nucleo board since that is widely available, but any similar board can be used instead.
+## 环境参数
+* arm-none-eabi-gg    
+* stm32 官方库 V3.5    
 
-The project is self contained. It will compile if:
-1. GCC ARM Embedded is installed: https://launchpad.net/gcc-arm-embedded
-2. make is installed and
-3. Some means of burning the code on the processor is installed. (Nucleo is good because it can program itself)
+## 源程序根据github上案例修改整合    
 
-To be able to compile, modify the path declaration values in the Makefile : 
-  TOOLROOT=
-  LIBROOT=
-to match your installation.
+## 存在问题
+* 当前工程只能在main.c文件中编写。后续学习makefile后再添加其他文件
 
-The end result simply blinks the on board LED. But is also proves that all of the tools are installed and set up correctly and you are now free to go ahead writing new programs.
+
+
+## 修改记录
+> * 2018.06.07 调整第一版程序
+
+## 指令操作    
+	//编译生成可BIN文件
+	make
