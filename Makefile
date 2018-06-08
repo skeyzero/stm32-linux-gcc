@@ -1,35 +1,51 @@
-# compilation flags for gcc and gas:
+#######################################################
+# Important:
+# Modify the lines below defining: TOOLROOT and LIBROOT
+#  to match their locations on your own computer!
+#######################################################
 
+#Comments start with '#'
+
+# compilation flags for gcc and gas:
+CFLAGS  = -O1 -g
 ASFLAGS = -g 
 
-# .o文件
-OBJS=  startup_stm32f10x.o system_stm32f10x.o  main.o
-OBJS += stm32f10x_gpio.o stm32f10x_rcc.o
+# Files used in the processor startup.
+# They are executed before control is passed over to main:
+STARTUP= startup_stm32f10x.o system_stm32f10x.o 
+
+# Object files which contain the funcions that are required by the final binary:
+# They are in no specific order.
+OBJS=  $(STARTUP) main.o
+OBJS += stm32f10x_gpio.o stm32f10x_rcc.o io.o
 
 # Names of output binary files. ELF is the default type output:
 # (The file name is the name of the current directory.)
 ELF=$(notdir $(CURDIR)).elf
 # Map file shows where each function and variable are allocated in memory:
 MAP_FILE=$(notdir $(CURDIR)).map
-# The '.bin' file will be burned into the processor:
-BIN_FILE=$(notdir $(CURDIR)).bin  
 
+
+# 生成bin文件名字
+# The '.bin' file will be burned into the processor:
+BIN_FILE=main.bin  
+
+# 使用到的指令
 CC=arm-none-eabi-gcc
 LD=arm-none-eabi-gcc
 AR=arm-none-eabi-ar
 AS=arm-none-eabi-as
 OBJCOPY=arm-none-eabi-objcopy
 
-# Library path
-# The STM supplied peripheral functions and definitions can be reached from the library directory root:
-# (Please look around in the library directories to see what is there to use.
+# 库文件位置
+LIBROOT=.
 
-# Paths of various components in the library specified here:
-DEVICE=./Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x
-CORE=./Libraries/CMSIS/CM3/CoreSupport
-PERIPH=./Libraries/STM32F10x_StdPeriph_Driver
-
-USRCORE=./usr
+# ARM-GCC编译选项 -I使用来指定源文件位置
+DEVICE=$(LIBROOT)/Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x
+CORE=$(LIBROOT)/Libraries/CMSIS/CM3/CoreSupport
+PERIPH=$(LIBROOT)/Libraries/STM32F10x_StdPeriph_Driver
+STARTUPPH=./Startup
+USRCODE=./usr
 
 # Search path for standard files
 vpath %.c
@@ -38,28 +54,24 @@ vpath %.c
 vpath %.c $(CORE)
 vpath %.c $(PERIPH)/src
 vpath %.c $(DEVICE)
-vpath %.c $(USRCORE)
-# Uncomment for the specific processor. STM32F103 is a Medium Density 'MD' device.
-# This defines the Proc. clock definition in file:
-# STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c, which is eventually included.
+vpath %.c $(STARTUPPH)
+vpath %.c $(USRCODE)
+
+# ARM-GCC编译选项，指定CM3类型
 PTYPE = STM32F10X_MD
-# OR uncomment the next line if a Value Line device is used 'VL':
-#PTYPE = STM32F10X_MD_VL  
 
 
 # Similarly, the linker script for the processor used must be specified. 
-LDSCRIPT = ./stm32f103.ld
+LDSCRIPT = ./Startup/stm32f103.ld
+#LDSCRIPT = ./stm32f100.ld
 
 # Compilation Flags
 FULLASSERT = -DUSE_FULL_ASSERT 
 
-#LDFLAGS+= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 
-# Modify linker flags to include a map file:
+# ARM-GCC编译选项
 LDFLAGS+= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 -Wl,-Map=$(MAP_FILE)
-
-CFLAGS  = -O1 -g
 CFLAGS+= -mcpu=cortex-m3 -mthumb 
-CFLAGS+= -I$(DEVICE) -I$(CORE) -I$(PERIPH)/inc -I. -I./usr
+CFLAGS+= -I$(DEVICE) -I$(CORE) -I$(PERIPH)/inc -I. -I$(STARTUPPH) -I$(USRCODE)
 CFLAGS+= -D$(PTYPE) -DUSE_STDPERIPH_DRIVER $(FULLASSERT)
 
 # Prepare the .bin binary file:
@@ -68,13 +80,13 @@ OBJCOPYFLAGS = -O binary
 # Build executable 
 $(BIN_FILE) : $(ELF)
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
-
+#编译完自动删除多余编译文件，如果需要调试功能，请将这里注释掉
+#	rm -f $(OBJS) $(OBJS:.o=.d) $(ELF) $(MAP_FILE) $(STARTUP) $(CLEANOTHER)
 
 $(ELF) : $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) $(LDFLAGS_POST)
 
 
-# 编译生成.o文件
 # compile and generate dependency info
 
 %.o: %.c
@@ -86,7 +98,7 @@ $(ELF) : $(OBJS)
 
 clean:
 #rm -f $(OBJS) $(OBJS:.o=.d) $(ELF) $(MAP_FILE) startup_stm32f* $(CLEANOTHER)
-	rm -f $(OBJS) $(OBJS:.o=.d) $(ELF) $(MAP_FILE) $(STARTUP) $(CLEANOTHER) *.o
+	rm -f $(OBJS) $(OBJS:.o=.d) $(ELF) $(MAP_FILE) $(STARTUP) $(CLEANOTHER)
 
 debug: $(ELF)
 	arm-none-eabi-gdb $(ELF)

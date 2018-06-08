@@ -1,29 +1,4 @@
-/********************************************************************
- * Copyright 2016 Ahmet Onat
- * This program is distributed under the terms of the 
- * GNU General Public License
- *
- * This file is part of STM32F10X-GCC
- *
- * STM32F10X-GCC is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * STM32F10X-GCC is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with STM32F10X-GCC.  If not, see <http://www.gnu.org/licenses/>.
- *
- *********************************************************************/
- 
-# include <stm32f10x.h>
-# include <stm32f10x_rcc.h>
-# include <stm32f10x_gpio.h>
-/* Also add: OBJS += stm32f10x_gpio.o stm32f10x_rcc.o
-   in the Makefile to add the libraries. */
+#include<io.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -36,23 +11,14 @@ static __IO uint8_t TimerEventFlag;
 int main(void)
 {
   //Holds the structure for the GPIO pin initialization:
-  GPIO_InitTypeDef GPIO_InitStructure;  
-
+ 
+LED_GPIO_Init();
   int MS_count =0;    //Counts the number of timer ticks (ms) so far.
 
   const int LED_ON_TIME = 200;        //LED on for 200ms
   const int LED_FREQUENCY = 1000;     //LED blink rate 1s (1000ms)
   
-  // Enable Peripheral Clocks of the devices that will be used.
-  RCC_APB2PeriphClockCmd (RCC_APB2Periph_GPIOA, ENABLE ); 
-
-  // Configure GPIO pin that LED is connected:
-  GPIO_StructInit (&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-
+ 
   // Configure SysTick Timer
   /*System timer tick is used to measure time. 
     The Cortex-M3 core used in the STM32 processors has a dedicated timer 
