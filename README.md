@@ -23,12 +23,12 @@
 
 ## 指令操作    
 	make
-	生成
+生成
 	
 	make load
-	通过st-link下载到目标板
+通过st-link下载到目标板
 	
-	linux下支持st-link，驱动方法请自行搜索。
+	linux下支持st-link，驱动方法请自行搜索。    
 	
 ##如果想交个朋友，请联系
 QQ:945764822    
