@@ -1,18 +1,11 @@
-#######################################################
-# Important:
-# Modify the lines below defining: TOOLROOT and LIBROOT
-#  to match their locations on your own computer!
-#######################################################
 
-#Comments start with '#'
 
-# compilation flags for gcc and gas:
+# C语言和汇编编译选项
 CFLAGS  = -O1 -g
 ASFLAGS = -g 
 
-# Files used in the processor startup.
-# They are executed before control is passed over to main:
-STARTUP= startup_stm32f10x.o system_stm32f10x.o 
+#依赖文件
+STARTUP= startup_stm32f10x.o system_stm32f10x.o
 
 # Object files which contain the funcions that are required by the final binary:
 # They are in no specific order.
@@ -27,7 +20,6 @@ MAP_FILE=$(notdir $(CURDIR)).map
 
 
 # 生成bin文件名字
-# The '.bin' file will be burned into the processor:
 BIN_FILE=main.bin  
 
 # 使用到的指令
@@ -41,9 +33,9 @@ OBJCOPY=arm-none-eabi-objcopy
 LIBROOT=.
 
 # ARM-GCC编译选项 -I使用来指定源文件位置
-DEVICE=$(LIBROOT)/Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x
-CORE=$(LIBROOT)/Libraries/CMSIS/CM3/CoreSupport
-PERIPH=$(LIBROOT)/Libraries/STM32F10x_StdPeriph_Driver
+DEVICE=$(LIBROOT)/Startup
+CORE=$(LIBROOT)
+PERIPH=$(LIBROOT)
 STARTUPPH=./Startup
 USRCODE=./usr
 
@@ -63,7 +55,6 @@ PTYPE = STM32F10X_MD
 
 # Similarly, the linker script for the processor used must be specified. 
 LDSCRIPT = ./Startup/stm32f103.ld
-#LDSCRIPT = ./stm32f100.ld
 
 # Compilation Flags
 FULLASSERT = -DUSE_FULL_ASSERT 
@@ -71,7 +62,7 @@ FULLASSERT = -DUSE_FULL_ASSERT
 # ARM-GCC编译选项
 LDFLAGS+= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 -Wl,-Map=$(MAP_FILE)
 CFLAGS+= -mcpu=cortex-m3 -mthumb 
-CFLAGS+= -I$(DEVICE) -I$(CORE) -I$(PERIPH)/inc -I. -I$(STARTUPPH) -I$(USRCODE)
+CFLAGS+= -I$(DEVICE) -I$(CORE) -I./inc -I. -I$(STARTUPPH) -I$(USRCODE)
 CFLAGS+= -D$(PTYPE) -DUSE_STDPERIPH_DRIVER $(FULLASSERT)
 
 # Prepare the .bin binary file:
@@ -81,7 +72,7 @@ OBJCOPYFLAGS = -O binary
 $(BIN_FILE) : $(ELF)
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 #编译完自动删除多余编译文件，如果需要调试功能，请将这里注释掉
-#	rm -f $(OBJS) $(OBJS:.o=.d) $(ELF) $(MAP_FILE) $(STARTUP) $(CLEANOTHER)
+	rm -f $(OBJS) $(OBJS:.o=.d) $(ELF) $(MAP_FILE) $(STARTUP) $(CLEANOTHER)
 
 $(ELF) : $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) $(LDFLAGS_POST)
