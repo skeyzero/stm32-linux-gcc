@@ -29,32 +29,27 @@ AR=arm-none-eabi-ar
 AS=arm-none-eabi-as
 OBJCOPY=arm-none-eabi-objcopy
 
-# 库文件位置
-LIBROOT=.
-
 # ARM-GCC编译选项 -I使用来指定源文件位置
-DEVICE=$(LIBROOT)/Startup
-CORE=$(LIBROOT)
-PERIPH=$(LIBROOT)
-STARTUPPH=./Startup
+DEVICE=./startup
 USRCODE=./usr
 
+#vpath %用于告诉make自动搜索文件。
+#如果没有指明这个变量，make只会在当前的目录中去找寻依赖文件和目标文件。如果定义了这个变量
+#vpath% .:./src   #可以通过分号来搜索多个目录
 # Search path for standard files
-vpath %.c
+#vpath %.
 
 # Search path for perpheral library
-vpath %.c $(CORE)
-vpath %.c $(PERIPH)/src
 vpath %.c $(DEVICE)
-vpath %.c $(STARTUPPH)
+vpath %.c ./src
 vpath %.c $(USRCODE)
 
 # ARM-GCC编译选项，指定CM3类型
 PTYPE = STM32F10X_MD
 
-
+# ARM-GCC编译选项，必须指明链接文件
 # Similarly, the linker script for the processor used must be specified. 
-LDSCRIPT = ./Startup/stm32f103.ld
+LDSCRIPT = ./startup/stm32f103.ld
 
 # Compilation Flags
 FULLASSERT = -DUSE_FULL_ASSERT 
@@ -62,7 +57,7 @@ FULLASSERT = -DUSE_FULL_ASSERT
 # ARM-GCC编译选项
 LDFLAGS+= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 -Wl,-Map=$(MAP_FILE)
 CFLAGS+= -mcpu=cortex-m3 -mthumb 
-CFLAGS+= -I$(DEVICE) -I$(CORE) -I./inc -I. -I$(STARTUPPH) -I$(USRCODE)
+CFLAGS+= -I$(DEVICE) -I./inc -I. -I$(USRCODE)
 CFLAGS+= -D$(PTYPE) -DUSE_STDPERIPH_DRIVER $(FULLASSERT)
 
 # Prepare the .bin binary file:
