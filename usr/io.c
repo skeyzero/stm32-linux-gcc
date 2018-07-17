@@ -3,6 +3,7 @@
 
 void LED_GPIO_Init(void)
 {
+#if 0
  	GPIO_InitTypeDef GPIO_InitStructure;  
   // Enable Peripheral Clocks of the devices that will be used.
   RCC_APB2PeriphClockCmd (RCC_APB2Periph_GPIOA, ENABLE ); 
@@ -13,5 +14,5 @@ void LED_GPIO_Init(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-
+#endif 
 }

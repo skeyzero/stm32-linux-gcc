@@ -10,6 +10,7 @@ static __IO uint8_t TimerEventFlag;
 
 int main(void)
 {
+#if 0
   //Holds the structure for the GPIO pin initialization:
  
 LED_GPIO_Init();
@@ -44,6 +45,7 @@ LED_GPIO_Init();
     else if(MS_count >=LED_FREQUENCY) //Manage MS_count value.
       MS_count=0;  
   }//End while(1)
+  #endif
 
 } //END main()
 
