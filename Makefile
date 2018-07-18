@@ -8,6 +8,10 @@ OBJS += main.o io.o										#++  依赖文件都在这里修改 根据工程所
 
 OUTPUT_DIR = ./output/
 
+SOURCE_DIR += -I./usr									#++ 将设计到的源文件文件夹包含进来，编译选项						
+SOURCE_DIR += -I./output
+SOURCE_DIR += -I./startup
+
 MAP_FILE=./output/STM32.map		# 生成MAP文件，如果不需要可一编译时删除 -Wl,-Map=$(MAP_FILE) 这个编译选项，调试时需要用到map
 BIN_FILE=main.bin  				#++ 生成bin文件名字，此文件用于下载到实际芯片
 ELF=stm32.elf					#++ 生成的可执行文件名字，
@@ -27,7 +31,7 @@ LDSCRIPT = ./startup/stm32f103.ld				# ARM-GCC编译选项，必须指明链接�
 FULLASSERT = -DUSE_FULL_ASSERT 					# Compilation Flags
 LDFLAGS+= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 -Wl,-Map=$(MAP_FILE)
 CFLAGS+= -mcpu=cortex-m3 -mthumb 
-CFLAGS+= -I./usr -I./output -I./startup			#++  编译时指定目标文件路径
+CFLAGS+= $(SOURCE_DIR)								#源文件文件夹
 CFLAGS+= -D$(PTYPE) -DUSE_STDPERIPH_DRIVER $(FULLASSERT)
 OBJCOPYFLAGS = -O binary
 
