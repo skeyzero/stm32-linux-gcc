@@ -50,6 +50,10 @@ $(ELF) : $(OBJS)
 
 clean:
 	rm -r $(OUTPUT_DIR)*.o $(OUTPUT_DIR)*.elf $(OUTPUT_DIR)*.d $(OUTPUT_DIR)*.map
+
+# 使用st-link下载	
+load:
+	st-flash write main.bin 0x08000000
 	
 debug: $(ELF)
 	arm-none-eabi-gdb $(ELF)
